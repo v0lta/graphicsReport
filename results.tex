@@ -1,0 +1,206 @@
+\section{Approximation of noiseless function data}
+In this first exercise noiseless functions of various complexities will be approximated, as shown in figures~\ref{fig:NoNoise1},\ref{fig:NoNoise2} and \ref{fig:NoNoise3}. Figure~\ref{fig:NoNoise1} depicts the \textit{under-fitting case}, with termination at a local optimum or after the maximum number if iterations is reached. In~\ref{fig:NoNoise2} where the amount of hidden neurons is increased to two, the solver does sometimes reach a state close to the global optimum, as shown on the left. In other cases, when the random initial condition is not as favorable, the optimization process terminates in a local optimum as shown on the right. If the number of hidden neurons is increased, the process will terminate somewhere close to the global solution more frequently. This is due to the fact that for harder nonlinear problems more hidden neurons enable the network to
+capture the nonlinearities better. On the other hand additional neurons also increase the chance of \textit{over-fitting} as shown in figure~\ref{fig:NoNoise3}. Here a neural network with 9 hidden layers is trained to fit to an almost linear function. In comparison to the estimation results with only one hidden neuron, the additional neurons cause strong oscillations. An overview of the feel of network performance based on the authors perception is given in table~\ref{tab:discoverApp}.
+
+\begin{table}
+\begin{tabular}{c c c c c c c c c c c}
+  \multirow{11}{*}{\rotatebox{90}{Function difficulty}} &
+  \multicolumn{10}{c}{Number of hidden neurons}                     \\
+    &    & 1  & 2    & 3    & 4    & 5    & 6    & 7    & 8      & 9    \\
+    & 1  & good & fair & fair & fair & bad  & bad  & bad  & bad  & bad  \\
+    & 2  & bad  & good & fair & fair & fair & fair & bad  & bad  & bad  \\
+    & 3  & bad  & fair & good & fair & fair & fair & fair & bad  & bad \\
+    & 4  & bad  & bad  & fair & good & fair & fair & fair & fair & bad \\
+    & 5  & bad  & bad  & bad  & fair & good & good & good & good & fair \\
+    & 6  & bad  & bad  & bad  & fair & fair & good & good & good & good \\
+    & 7  & bad  & bad  & bad  & bad  & fair & fair & good & good & good \\
+    & 8  & bad  & bad  & bad  & bad  & bad  & fair & fair & good & good \\
+    & 9  & bad  & bad  & bad  & bad  & bad  & bad  & fair & fair & good \\ 
+\end{tabular}
+\caption{Approximation quality as based on the subjective judgment of the author when
+using \texttt{nnd11gn}.}
+\label{tab:discoverApp}
+\end{table}
+
+\begin{figure}
+\input{../src/tikz/neur2Diff5v1.tex}
+\input{../src/tikz/neur2Diff5v2.tex}
+\caption{Difficulty level 5 noiseless function approximation  using two hidden neurons, optimization terminates in local optimum (left), and after the iteration maximum is reached (right).}
+\label{fig:NoNoise1}
+\input{../src/tikz/neur3Diff5v1.tex}
+\input{../src/tikz/neur3Diff5v2.tex}
+\caption{Difficulty level 5 approximation  using three hidden neurons, optimization terminates in global optimum (left), and in a local optimum (right).}
+\label{fig:NoNoise2}
+\input{../src/tikz/neur9Diff1v2.tex}
+\input{../src/tikz/neur1Diff1v1.tex}
+\caption{Difficulty level 1 function approximation with 9 hidden neurons (left) and one neuron (right).}
+\label{fig:NoNoise3}
+\end{figure}
+
+\section{The role of the hidden and output layer.}
+\subsection{Linear regression}
+As a second example the use of a neural net to solve a linear regression is problem is considered. The output pattern to be modeled is given by
+\begin{equation}
+y_p = \omega_1 x_{1,p} + \omega_2 x_{2,p} + \omega_3 x_{3,p} + \dots + \omega_n x_{n,p} + \beta.
+\end{equation}
+The parameters $\{\omega_{i}\}^n_1$ are to be determined from solving the optimization problem
+\begin{equation}
+\underset{\omega,\beta}{\text{min}} \sum^{P}_{p=1} (y_p) - (\omega_1 x_{1,p} + \omega_2 x_{2,p} + \omega_3 x_{3,p} + \dots + \omega_n x_{n,p} + \beta)^2.
+\label{eq:ex2Desired}
+\end{equation}
+This may be done from a neural networks point of view using 
+\begin{equation}
+y = \sigma (\mathbf{\omega}^T \mathbf{x} + \beta).
+\end{equation}
+With the activation function sigma just being the linear $\sigma(x) = x$. The corresponding optimization problem, which yields the neuron weights is
+\begin{equation}
+\underset{\omega,\beta}{\text{min}} (y_p - y)^2.
+\end{equation}
+Which leads back to equation~\ref{eq:ex2Desired} as desired. In order to solve this problem a single neuron is sufficient. In this special case no hidden layers exist and the input layer is at the same time the output layer, as shown in the \textit{McCulloch-Pitts model} in the course text on page 21.
+
+\subsection{Approximating Sine}
+Next the performance of the network architecture outline above is tested on
+\begin{equation}
+\mathbf{y_p} = sin(0.7\pi\mathbf{x_p})
+\label{eq:sine}
+\end{equation}
+with $x_p \in [0,1]$.
+\begin{figure}
+\centering
+\input{../src/tikz/networksOnSine.tex}
+\caption{Linear net performance on equation \ref{eq:sine}. With the blue line showing the sine function. The output of the linear network is shown by red stars. The output of the net containing a hidden layer with two neurons is shown in yellow.}
+\label{fig:sineLinNet}
+\end{figure}
+A plot of relation~\ref{eq:sine} and the output values generated by a linear network trained on this data set is given in figure ~\ref{fig:sineLinNet}. The network is unable to capture the behavior of the sine properly. Generally the sine can only be assumed to be linear for very small angles. When $x \in [0,1]$ this small angle approximation is no longer valid. Adding a hidden layer with two neurons to the network enables it to deal well with the nonlinearity of the sine. 
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{../src/figure/simpleNet.png}
+\input{../src/tikz/hidden2Sine.tex}
+\caption{Network architecture and corresponding output. The color of the neuron outputs corresponds to their color in the layout. The red crosses indicate target function points.}
+\label{fig:layoutOutput}
+\end{figure}
+
+Figure~\ref{fig:layoutOutput} shows the output of the two hidden layer elements, which are colored in red and yellow. The blue curve indicates the network output. The blue neuron produces the corresponding signal. In the arrows are labeled with their weights using the notation used in matlab \texttt{Function Fitting Neural Network} objects. Hyperbolic tangents serve as activation functions to the two hidden elements. After training the network and extracting the weights the functions shown in figure~\ref{fig:layoutOutput} can be produced by the \texttt{matlab} code snippet:
+\begin{lstlisting}[language=matlab]
+h1out = tanh(IW(1)*x + hb(1));
+h2out = tanh(IW(2)*x + hb(2));
+output = LW(1)*h1out + LW(2)*h2out + ob;
+\end{lstlisting}
+
+\section{Function approximation (noisy case)}
+\subsection{Variation of the noise variance}
+\begin{figure}
+\input{../src/tikz/noisyCase100p1d5s.tex}
+\input{../src/tikz/noisyCase100p05d5s.tex}
+\input{../src/tikz/noisyCase100p01d5s.tex}
+\caption{Approximation of a noisy sinusoidal signal using 100 data points and 5 hidden neurons. The noise is normal distributed with decreasing variance according to $\mathcal{N}(0,1^2)$, $\mathcal{N}(0,0.5^2)$ and $\mathcal{N}(0,0.1^2)$ from left to right. The blue stars show the noisy training and validation data. The noise free target function is shown in yellow, while the neural network approximation is shown in orange.}
+\label{fig:noisyCase1}
+\end{figure}
+Figure~\ref{fig:noisyCase1} shows the approximation results of a network with one hidden layer containing five elements. 100 data points have been used. The standard deviation of the normally distributed noise decreased from $\sigma = 1$ to $\sigma = 0.5$ and finally to $\sigma = 0.1$. The figure reveals that the fit improves as the noise variance decreases. 
+
+\subsection{Different sized inputs}
+\begin{figure}
+\input{../src/tikz/noisyCase100p1d5s.tex}
+\input{../src/tikz/noisyCase200p1d5s.tex}
+\input{../src/tikz/noisyCase1000p1d5s.tex}
+\caption{Approximation of a noisy sinusoidal signal with noise distribution $\mathcal{N}(0,1^2)$. The number of input data points has been increased from 100 on the left to 200 in the middle and finally 1000 on the right.}
+\label{fig:noisyCase2}
+\end{figure}
+In the series of plots shown in figure~\ref{fig:noisyCase2}, the number of input points has been increased from 100 to 200 and finally to 1000. It can be observed that if the input data is split evenly into training and validation data points, the more data is available the better the network is able to approximate the function. This can be seen as a manifestation of the law of large numbers.
+\subsection{The size of the hidden layer}
+\begin{figure}
+\input{../src/tikz/noisyCase200p1d3s.tex}
+\input{../src/tikz/noisyCase200p1d5s.tex}
+\input{../src/tikz/noisyCase200p1d10s.tex}
+\caption{Approximation of a noisy sinusoidal signal with noise distribution $\mathcal{N}(0,1^2)$. In the experiments shown ,the number of neurons has been increased from 3 to 5 and finally to 10 from left to right.}
+\label{fig:noisyCase3}
+\end{figure}
+Figure~\ref{fig:noisyCase3} shows network outputs to the same input data. The plotted response data has been computed using different sigmoid numbers in the hidden layer. The number of perceptrons has been increased from three to five and finally to 10. For three neurons the network is not able to cope with the complexity of the sinusoid. With 5 neurons it works well. Overfitting can be seen for 10 hidden elements, the effect is particularly pronounced due to the added capacity for noise tracing of the more complex network.
+
+\subsection{Different training algorithms}
+\begin{figure}
+\input{../src/tikz/noisyCase200p1d5s.tex}
+\input{../src/tikz/noisyCase200p1d5sLMb.tex}
+\input{../src/tikz/noisyCase200p1d5sbfgsb.tex}
+\caption{Neural network output using different optimization algorithms during the training process. Scaled conjugate gradient (shown left), Levenberg-Marquardt (middle) and BFGS quasi-Newton (right) backpropagation versions have been used to approximate the noisy sinusoid.}
+\label{fig:noisyCase4}
+\end{figure}
+In figure~\ref{fig:noisyCase4} network outputs from networks trained using different optimization algorithms are shown. 
+Due to the random nature of the sulutions it is hard to draw conclusion about their performance, but it seems that the Levenberg-Marquardt method suffers more from the noise in comparison to the other two methods. In general the scaled gradient descent algorithm is a good choice for large networks. Levenberg-Marquardt and BFGS quasi-Newton methods are suitable for medium sized networks due to their memory requirements and computational overhead. \footnote{Matlab 2015b documentation}
+
+\subsection{Early stopping}
+\begin{figure}
+\centering
+\input{../src/tikz/noisyCase200p1d5sEarlyStopOpt.tex}
+\input{../src/tikz/noisyCase200p1d5sEarlyStopBest.tex}
+\caption{The plot on the left shows the optimal fit when using early stopping. On the right the mean squared error is plotted in relation to the optimization iterations or epochs.}
+\label{fig:noisyCase5}
+\end{figure}
+In order to tackle over-fitting resulting from running the learning process too long, early stopping is used. The process is shown in figure~\ref{fig:noisyCase5}. Using the validation data the number of iterations is determined after, which the learning process is mainly concerned with memorizing noise contributions. This can be detected by looking at the fit to the validation data set. As soon as the validation error begins to rise, the training is stopped. \footnote{The effect can best be seen in a video like the one at \url{https://youtu.be/by8eFWhsvlM} where at about $0.75$ the network gets drawn to some misleading noisy points.}
+
+\subsection{Regularization}
+\begin{figure}
+\centering
+\input{../src/tikz/noisyCase200p1d5RegDmp.tex}
+\input{../src/tikz/noisyCase200p1d5RegOpt.tex}
+\input{../src/tikz/noisyCase200p1d5RegFree.tex}
+\caption{Neural network performance using regularization parameters $v = 0.25$, $v = 0.05$ and $v = 0.01$.}
+\label{fig:noisyCase6}
+\end{figure}
+When thinking about regularization it is helpful to consider the eigenvalue representation of the Hessian $\mathbf{Hu}_j = \lambda_j \mathbf{u}_j$. When the gradient of the regularized problem is formulated and the definition for the regularization parameter is plugged in.\footnote{Suykens, Data Mining and Neural Networks, Cursustekst page 91.} The expression 
+\begin{equation}
+\tilde{\mathbf{\omega}} = \frac{\lambda_j}{\lambda_j + v}\omega
+\label{eq:filter}
+\end{equation}
+is obtained. Which relates the regularized form of the weights $\tilde{\omega}$ and the original parameters of the problem $\omega$. It follows from equation~\ref{eq:filter} that filtering takes place for eigenvalues $\lambda < v$. This fact explains the plots shown in figure~\ref{fig:noisyCase6}, for $v = 1$ too many eigencomponents are filtered. This leads to the heavily damped network output shown on the left. Optimal damping shown in the middle leads to good tracking of the solution. Where not enough damping is applied in the right, here the network starts to track the noise.
+
+\subsection{Impact of the initial condition}
+Depending on the choice of the weights the training process is started with, the optimization algorithms used to teach the network will terminate in different local minima. In order to avoid a particularly bad one it is always a good idea to repeat the training process with several different initial conditions. 
+
+\section{Curse of dimensionality}
+In this last section of this report. The noise free hat function
+\begin{equation}
+f(x) = \text{sinc}(\sqrt{\sum_{i=1}^{m}} x_i^2)
+\label{eq:mexHat}
+\end{equation}
+is considered. Its output will be computed in one dimension $m = 1$ in two dimensions $m = 2$ and finally in five dimensions $m = 5$. Function output and network approximation in one dimension is shown in figure~\ref{fig:dimCurse1}. 
+\begin{figure}
+\centering
+\input{../src/tikz/dimCurse1.tex}
+\caption{Approximation of the noise free function from equation~\ref{eq:mexHat} in one dimension using a neural net with one hidden layer containing 10 neurons.}
+\label{fig:dimCurse1}
+\end{figure}
+However in two dimensions the picture changes. Figures~\ref{fig:dimCurse2} and~\ref{fig:dimCurse3} show the original hat function as well as approximations using different network architectures. Namely 10, 100 perceptrons as well as an MLP with 50 perceptrons in two hidden layers have been trained. As the increase from 10 to 100 neurons increases the qualtiy of the approximations, but even more effective is the split in two hidden layers. This is probably due to the added level of abstraction, that comes with two hidden layers, as the second layer can build upon decisions made by the previous layer.
+\begin{figure}
+\centering
+\input{../src/tikz/dimCurse2Orig.tex}
+\input{../src/tikz/dimCurse2l1s10.tex}
+\caption{Original hat function and neural network approximation using 10 perceptrons in one hidden layer.}
+\label{fig:dimCurse2}
+\end{figure}
+\begin{figure}
+\centering
+\input{../src/tikz/dimCurse2l1.tex}
+\input{../src/tikz/dimCurse2l2.tex}
+\caption{Surface plots of two dimensional hat function approximations using 100 elements in one hidden layer and two hidden layers containing 50 neurons each.}
+\label{fig:dimCurse3}
+\end{figure}
+The images above have been computed using a grid ratio of \texttt{100} points. In five dimensions this is impossible as this would require \texttt{100x100x100x100x100}$\approx$\texttt{74.5GB} of memory, to lay out the complete grid in five dimensions. Of course fewer random points could be considered, but in this report the resolution will be decreased to \texttt{20} points, which allows it to train the networks on esat's \texttt{vierre64} in all dimensions results are shown in table~\ref{tab:netErr}. The errors are computed using
+\begin{equation}
+\frac{\text{norm}(f(x) - N(x))}{\text{norm}(f(x))} 
+\end{equation}
+with $N(x)$ describing the network output.
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|}\hline
+                  &\texttt{[10]} & \texttt{[100]} & \texttt{[50 50]} \\ \hline
+$\mathbb{R}^1$   & 1.5425       &   1.5818       &  0.6320 \\
+$\mathbb{R}^2$   & 0.9916       &   0.7167       &  0.3340 \\
+$\mathbb{R}^5$   & 1.0000       &   1.0005       &  1.0005 \\ \hline
+\end{tabular}
+\caption{Error norm of network approximations using various Architectures of functions of different dimensions.}
+\label{tab:netErr}
+\end{table}
+The key to the ability of neural networks to deal with high dimensional data is their ability to cope with added complexity trough rearrangement of their neurons is more layers, which allows to incorporate information generated in the previous layer. According to Barron the approximation error becomes independent of the dimension of the input space. Which is visible in table~\ref{tab:netErr}.
+
+
