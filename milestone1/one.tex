@@ -49,7 +49,7 @@ a_z - o_z \\
 Equation~\ref{eq:triInt} could in principle be given to a linear algebra subroutine for solution. If the inequalities~\ref{ineq:inCond} are satisfied and $t > \epsilon$. Where epsilon is a small positive number used to prevent self intersection. A valid intersection has been found. However this
 is not the most efficient way to proceed. Always solving the whole equation system is not necessary all the time.
 Using Cramers rule the a set of equations can be derived and the intersection method can return as soon as one 
-condition is violated. This way unnecessary computations can be avoided\footnote{See Ray Tracing from the Ground up page 366 for further details.}.
+condition is violated. This way unnecessary computations can be avoided. \footnote{See Ray Tracing from the Ground up page 366 for further details.}
 
 \subsection{The plane primitive}
 Another important primitive is the plane. These objects can be defined by a normal $\mathbb{n}$ which determines, where
@@ -145,20 +145,19 @@ Rotation around the tree axes:
 \begin{align}
 T_x = \begin{pmatrix}
 	1&		&		&		&				\\
-	&		cos(\theta)&	-sin(\theta)&	\\
-    &		sin(\theta)&	cos(\theta)	&	\\
+	&		\cos(\theta)&	-\sin(\theta)&	\\
+    &		\sin(\theta)&	\cos(\theta)	&	\\
 	&		&		&		1				
 \end{pmatrix} \\
 T_y = \begin{pmatrix}
-	1&		&		&		&				\\
-	&		cos(\theta)&	-sin(\theta)&	\\
-    &		sin(\theta)&	cos(\theta)	&	\\
-	&		&		&		1				
-\end{pmatrix} \\
-T_z = \begin{pmatrix}
-cos(\theta) &	    &		sin(\theta) &	 &	\\
+\cos(\theta) &	    &		\sin(\theta) &	 &	\\
 	         &	   1&	                &	 &	\\
--sin(\theta) &	    &		cos(\theta) &	& 	\\
+-\sin(\theta) &	    &		\cos(\theta) &	& 	\\
+		     &	    &		            &		1 \\\end{pmatrix} \\
+T_z = \begin{pmatrix}
+\cos(\theta)&	-\sin(\theta)&  & &	 &	\\
+\sin(\theta)&	\cos(\theta)&&	                &	 &	\\
+            &    &		1 &	& 	\\
 		     &	    &		            &		1 \\
 \end{pmatrix} \\
 \end{align}
@@ -182,16 +181,32 @@ In the unchanged space the normal must be orthogonal to an infinitely small vect
 Thus normals will be transformed by the transposed inverse transformation matrix.
 
 \section{Point Lights}
-
+Point lights emit light from a single point only. To create a point light its location $\mathbf{p}_l$, color $\mathbf{c}_l$ and intensity $l_s$ have to be stored. 
 
 
 \section{Shading}
-
+Shading with respect to point lights can be done with a simplified form of the rendering equation. Taking only into account ambient and distance attenuated direct illumination one arrives at:\footnote{Ray tracing from the ground up page 265. } \footnote{Computergrafiek Project sessie 1 page 41. }
+\begin{equation}
+L(\mathbf{p},\mathbf{\omega}) = \rho_a \mathbf{c}_d \cdot (l_s \mathbf{c}_l) + \sum_{j=1}^{n}(\rho_d \mathbf{c}_d/ \pi)
+\cdot (l_{s,j}\mathbf{c}_{l,j})(\mathbf{n}^T\mathbf{l}_j)/(d_j^2) \cdot V(\mathbf{p},\mathbf{p}_{l,j})
+\end{equation} 
+With $\rho$ describing the material reflectivity with respect to ambient or diffuse illumination. Light intensity is denoted by $l$. The $\mathbf{c}$ vectors represent r,g,b color values, $\mathbf{n}$ denotes the normal vector. The vector $\mathbf{\omega}$ points from $\mathbf{p}$ to the camera and $\mathbf{l}$ to the light source. Finally the visibility function $V$ is one if the location of the point light $\mathbf{p}_l$ is visible from the object intersection point $\mathbf{p}$ and zero if not.
 
 
 \section{Camera}
-
-
+In this project a perspective camera is used. To set it up a the resolution ($r_x,r_y$), origin $\mathbf{e}$, view direction $\mathbf{l}$ , spacial orientation $\mathbf{up}$ and the field of view angle $\delta$ have to be provided. Using $\delta$ and the resolution data the width $w$ and hight $h$ of the view plane can be computed:
+\begin{align}
+w = 2 \cdot d \tan(\delta/2) \\
+h = r_y \cdot w \cdot 1/r_x
+\end{align}
+The view plane distance can be kept at $d = 1$ for all practical purposes. Changing $d$ would change the zoom of the camera just like changing the view angle does. Making $d$ a variable user parameter would therefore have no additional value. 
+In order to describe the view plane and generate primary rays more easily the camera coordinate system is used. This system is set up using:
+\begin{align}
+\mathbf{w} &= (-1) \cdot \mathbf{l} \\
+\mathbf{u} &= (\mathbf{up} \times \mathbf{w})/ \|\mathbf{up} \times \mathbf{w} \| \\
+\mathbf{v} &= \mathbf{w} \times \mathbf{u}
+\end{align}
+In this coordinate system points on the view plane can be expressed in terms of $\mathbf{u}$ and $\mathbf{v}$, which in turn become primary ray directions if $\mathbf{w}$ is subtracted. With the known camera position as the ray origin all necessary information to generate primary rays is available.
 
 \section{Python or Java}
 In this section two basic ray tracing implementations using only diffuse shading without shadows in Java and Python will be compared. A scene consisting of a plane with a chess like procedural texture as well a two spheres will be set up in both languages. 

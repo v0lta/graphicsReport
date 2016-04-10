@@ -1,0 +1,21 @@
+
+\input{./src/preamble.tex}
+\addto\captionsenglish{\renewcommand{\chaptername}{Milestone}}
+
+\begin{document}
+\input{./src/Masterproef_EN_2012.tex}
+ 
+\tableofcontents
+\setcounter{page}{0}
+\pagenumbering{arabic}
+
+\chapter{Essentials}
+\subimport{./milestone1/}{one.tex}
+
+\chapter{Textures and acceleration}
+\subimport{./milestone2/}{two.tex}
+
+\chapter{Special Effects}
+%\subimport{./specialization/}{three.tex}
+
+\end{document}
