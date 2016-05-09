@@ -26,6 +26,13 @@ Here $n_s$ denotes the number of samples, and $p(\mathbf{p}')$ the probability d
 \caption{A spherical area light causing smooth shadows on a sphere}
 \label{fig:borgEarth}
 \end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=0.5\linewidth]{./img/areaTeapot}
+\caption{A rectangular area light illuminating the Utah teapot}
+\label{fig:areaTeapot}
+\end{figure}
+
 
 \section{Special effects}
 \subsection{Normal Mapping}
@@ -67,20 +74,25 @@ f_s(\mathbf{p},\mathbf{\omega}_i,\mathbf{\omega}_0) = \rho_s (\mathbf{r}^T \math
 \end{equation}
 is considered.\footnote{Ray Tracing from the ground up page 281} The vector $r$ denotes the mirror reflection direction.  Furthermore a Cook-Torrance model for the specular part has been implemented. This model is taken from their original 1982 publication: \footnote{A Reflectance Model for Computer Graphics, Robert L. Cook, Kenneth E. Torrance, ACM Transactions on Graphics, Vol. 1, No. 1, January 1982, Pages 7-24}
 \begin{align}
-c & = \mathbf{\omega}_0^T \mathbf{h} \\
+\mathbf{h} &= \frac{\mathbf{c} + \mathbf{\omega}_i}{\| \mathbf{c} + \mathbf{\omega}_i \|} \\
+c & = \mathbf{c}^T \mathbf{h} \\
 g &=  \sqrt{n*n + c*c - 1} \\
 n &= \frac{1 + \sqrt{f_0}}{1 - \sqrt{f_0}} \\
 F &= \frac{1}{2} \frac{(g - c)^2}{(g + c)^2} (1 + \frac{[c (g + c) - 1]^2}{[c (g - c) + 1]^2}) \\
-\mathbf{h} &= \frac{\mathbf{\omega}_0 + \mathbf{\omega}_i}{\| \mathbf{\omega}_0 + \mathbf{\omega}_i \|} \\
 \alpha &= \cos^{-1}(\mathbf{h}^T \mathbf{n}_\mathbf{p}) \\
 D &= \frac{1}{m^2 cos^4(\alpha)}e^{[-(\tan(\alpha)/m)]^2} \\
 G &= \min(1,
-     \frac{2 (\mathbf{n}_\mathbf{p}^T \mathbf{h})(\mathbf{n}_\mathbf{p}^T \mathbf{\omega}_0)  }{(\mathbf{\omega}_0^T \mathbf{h})}),
-     \frac{2 (\mathbf{n}_\mathbf{p}^T \mathbf{h})(\mathbf{n}_\mathbf{p}^T \mathbf{\omega}_i)  }{(\mathbf{\omega}_0^T \mathbf{h})}) \\
-f_s(\mathbf{p},\mathbf{\omega}_i,\mathbf{\omega}_0) &= \frac{\rho_s}{\pi}
- \frac{DG}{(\mathbf{n}_{\mathbf{p}}^T \mathbf{\omega}_i)(\mathbf{n}_{\mathbf{p}}^T \mathbf{\omega}_0)} F(c,g) \\
+     \frac{2 (\mathbf{n}_\mathbf{p}^T \mathbf{h})(\mathbf{n}_\mathbf{p}^T \mathbf{c})  }{(\mathbf{c}^T \mathbf{h})}),
+     \frac{2 (\mathbf{n}_\mathbf{p}^T \mathbf{h})(\mathbf{n}_\mathbf{p}^T \mathbf{\omega}_i)  }{(\mathbf{c}^T \mathbf{h})}) \\
+f_s(\mathbf{p},\mathbf{\omega}_i,\mathbf{c}) &= \frac{\rho_s}{\pi}
+ \frac{DG}{(\mathbf{n}_{\mathbf{p}}^T \mathbf{\omega}_i)(\mathbf{n}_{\mathbf{p}}^T \mathbf{c})} F(c,g) \\
 \end{align} 
-The model depends on the two input parameters $f_0$ and $m$ as well as the scaling factor $\rho_s$. The first input is the value of the Fresnel-equation at normal incidence. The second is the root mean square slope $m$ of assumed material facets. The smaller both parameters become the less mirror like will the resulting material will be. 
+The model depends on the two input parameters $f_0$ and $m$ as well as the scaling factor $\rho_s$. The first input is the value of the Fresnel-equation at normal incidence. The second is the root mean square slope $m$ of assumed material facets. The smaller both parameters become the less mirror like will the resulting material will be. The vectors $\mathbf{c,\omega_i}$ point to the camera and the light source respectively.
+The vector $\mathbf{h}$ represents the normalized vector in the direction of the angular bisector of the view and light orientation vectors.
+The $c$ variable stands for the cosine of the angle between $\mathbf{c}$ and $\mathbf{h}$ or $\omega_i$ and $\mathbf{h}$. 
+The Fresnel term $F$ determines how light is reflected from each of the assumed smooth micro-facets. 
+A facet slope distribution function $D$ is used. This term depends on the angle between $\mathpf{n_p}$ and $\mathbf{h}$ called $\alpha$.
+Finally
 
 \subsection{Importance Sampling}
 In oder to  reduce the amount of samples required to come close to a decent approximation of the solution importance sampling is used. It's key concept is to distribute the sample points $\mathbf{p}'$ on the light source according to their contribution to the solution, important areas of the light should be sampled more often then insignificant ones. To achieve this goal the light source is subdivided into parts. A random point of each part is sampled and an importance value
