@@ -91,8 +91,8 @@ The model depends on the two input parameters $f_0$ and $m$ as well as the scali
 The vector $\mathbf{h}$ represents the normalized vector in the direction of the angular bisector of the view and light orientation vectors.
 The $c$ variable stands for the cosine of the angle between $\mathbf{c}$ and $\mathbf{h}$ or $\omega_i$ and $\mathbf{h}$. 
 The Fresnel term $F$ determines how light is reflected from each of the assumed smooth micro-facets. 
-A facet slope distribution function $D$ is used. This term depends on the angle between $\mathpf{n_p}$ and $\mathbf{h}$ called $\alpha$.
-Finally
+A facet slope distribution function $D$ is used. This term depends on the angle between $\mathbf{n_p}$ and $\mathbf{h}$ called $\alpha$.
+Finally the geometric attenuation factor $G$ is the last term required to compute the Cook-Torrance BRDF.
 
 \subsection{Importance Sampling}
 In oder to  reduce the amount of samples required to come close to a decent approximation of the solution importance sampling is used. It's key concept is to distribute the sample points $\mathbf{p}'$ on the light source according to their contribution to the solution, important areas of the light should be sampled more often then insignificant ones. To achieve this goal the light source is subdivided into parts. A random point of each part is sampled and an importance value
