@@ -1,23 +1,23 @@
 \section{Acceleration}
-Rendering the triangle meshes quickly becomes a time intensive task, if the triangles forming the model are stored in a simple list. For example the scene shown in figure~\ref{fig:teapotWithAcc} consists of the Utah teapot standing on a plane, illuminated by a point light. Rendering it without an acceleration structure with enabled shadows takes approximately 1151 seconds or 19 minutes and 11 seconds. A first measure to improve matters is to surround the mesh with a box. Only if an incoming ray hits the box is it intersected with the triangles of the mesh. Using a bounding box reduces the rendering time to 613 seconds or about 10 min for scene~\ref{fig:teapotWithAcc}. To reduce computations required to render the scene further the number of intersection tests per pixel has to be reduced further. This can be done by subdividing the bounding box. Three different ways if subdivision will be considered. All of them start by finding the longest dimension of the box, but differ in the way this longest dimension is split.
+Rendering the triangle meshes quickly becomes a time intensive task if the triangles forming the model are stored in a simple list. For example the scene shown in figure~\ref{fig:teapotWithAcc} consists of the Utah teapot standing on a plane, illuminated by a point light. Rendering it without an acceleration structure with enabled shadows takes approximately 1151 seconds or 19 minutes and 11 seconds. A first measure to improve matters is to surround the mesh with a box. Only if an incoming ray hits the box is it intersected with the triangles of the mesh. Using a bounding box reduces the rendering time to 613 seconds or about 10 min for scene~\ref{fig:teapotWithAcc}. To reduce computations required to render the scene further the number of intersection tests per pixel has to be reduced. This can be done by subdividing the bounding box. Three different ways of subdivision will be considered. All of them start by finding the longest dimension of the box, but differ in the way this longest dimension is split.
 \subsection{Middle-Split}
 The first method splits the parent box into two children in the geometric middle of the longest axis. After the split the triangles are assigned to the
-left or right subbox according to the position of their centroid. The two subboxes are then resized to ensure that no triangle vertices's lay outside the two boxes. After the resizing operation it is possible, that the two boxes overlap.   
+left or right sub-box according to the position of their centroid. The two subboxes are then resized to ensure that no triangle vertices's lay outside the two boxes. After the resizing operation it is possible, that the two boxes overlap.   
 \subsection{Split a sorted list}
-The second method sorts the triangles contained in the box according to their centroid coordinate of the axis under consideration. The dimensions of the child boxes is then obtained by splitting the sorted list in the middle and assigning each child half of the triangles. The new boxes are then resized such that they contain all of their triangles entirely.
+The second method sorts the triangles contained in the box according to their centroid coordinate of the axis under consideration. The dimensions of the child boxes are then obtained by splitting the sorted list in the middle and assigning each child half of the triangles. The new boxes are then resized such that they contain all of their triangles entirely.
 \subsection{Surface area heuristic}
 Finally the surface area heuristic is considered, which splits along several points and chooses from a set of available options by evaluating the cost function:
 \begin{equation}
-\text{cost} = N_{\text{left}} \cdot \frac{S_{left}}{S_{total}} +
-              N_{\text{right}} \cdot \frac{S_{right}}{S_{right}}
+\text{cost} = N_{\text{left}} \cdot \frac{S_{\text{left}}}{S_{\text{total}}} +
+              N_{\text{right}} \cdot \frac{S_{\text{right}}}{S_{\text{total}}}
 \end{equation}
 Where $N$ denotes the number of primitives in a given box and $S$ its surface along the dimension under consideration. Before the cost function can be evaluated the parent box is split along its longest edge $c_{SAH}$ times, and $c_{SAH} + 1$ child boxes are created. The child boxes of each side of the cut are then combined and resized and the cost function is evaluated for each combination. Finally the combination with the lowest cost is chosen. 
 
 \subsection{Intersection testing}
-In order to avoid unnecessary computation work it is important to avoid intersecting boxes, where a visible hit cannot be found. To do this a ray is always intersected with the box having the centroid closer to the camera. The second box is only considered if an intersection found in the first box lies in a space where both boxes overlap. 
+In order to avoid unnecessary computation work it is important to avoid intersecting boxes, where a visible hit cannot be found. To do this a ray is always intersected with the box having the centroid closer to the camera. If the difference between the two centroid distances is larger then a predefined constant, the second box is only considered if an intersection found in the first box lies in a space where both boxes overlap. 
 
 \subsection{Results}
-Table~\ref{tab:teapodTiming} shows the timing results of the three implemented splitting methods. Considering the decrease from the initial 10 minutes the reduction of rendering time is impressive for each method. The surface area heuristic is the best choice here as its tree is the most efficient and the additional time needed to construct it does not make a difference in this example. Table~\ref{tab:DragonTiming} shows the situation for the dragon scene. Here the surface Area heuristic is still the most efficient in terms of rendering time, but it looses during the tree generation phase. This would certainly change if the implementation of the SAH tree generation function would be optimized further.  
+Table~\ref{tab:teapodTiming} shows the timing results of the three implemented splitting methods. Considering the decrease from the initial 10 minutes the reduction of rendering time is impressive for each method. The surface area heuristic is the best choice here as its tree is the most efficient and the additional time needed to construct it does not make a difference in this example. Table~\ref{tab:DragonTiming} shows the situation for the dragon scene. Here the surface Area heuristic is still the most efficient in terms of rendering time, but it looses during the tree generation phase. These results indicate, that there is still room for further optimization of the SAH-tree generation function.  
 
 \begin{table}
 \centering
@@ -56,7 +56,7 @@ SAH             & 11.0 & 14.3  &  6.71  & 32.01	 \\ \hline
 \centering
 \includegraphics[width=0.45\linewidth]{./img/dragon}
 \includegraphics[width=0.45\linewidth]{./img/dragonFC4}
-\caption{High resolution Standford-Dragon rendered image and false color visualizations of the intersections with a color map maximum at 180 intersections and 4 SAH cuts per split }
+\caption{High resolution Standford-Dragon model consisting of 871306 triangles. Rendered image and false color visualizations of the intersections with a color map maximum at 180 intersections and 4 SAH cuts per split }
 \label{fig:dragon}
 \end{figure}
 
@@ -76,7 +76,7 @@ More interesting patterns can be computed by using fractals. Often used examples
 \begin{equation}
 f(z) = z^2 + c \;\;\; z \in \mathbb{C}
 \end{equation}
-Where $c$ is considered the seed. Changing $c$ changes the appearance of the fractal drastically. Julia sets are generated by applying the function $f(z)$ to itself repeatedly, compute $f(z),f(f(z)),f(f(f(z))),\dots$. This process is repeated until the iteration exceeds a predefined limit value $\|z_n|\ > k$, or a maximum number of iterations is reached. Each point is then colored according to how many iterations $n$ it took to reach the limit $k$. The logarithm of the iterations counter is hashed linearly from 0 to the largest occurring value to colors. Plots with $c = -0.07,0.652, c = -0.02,0.652, c= -0.02,0.8$ with the initial $z_{\text{init}} \in [-1,1]$ and $k = 1$ are given in figure~\ref{fig:julia4}.
+Where $c$ is considered the seed. Changing $c$ changes the appearance of the fractal drastically. Julia sets are generated by applying the function $f(z)$ to itself repeatedly, compute $f(z),f(f(z)),f(f(f(z))),\dots$. This process is repeated until the iteration exceeds a predefined limit value $\|z_n \| > k$, or a maximum number of iterations is reached. Each point is then colored according to how many iterations $n$ it took to reach the limit $k$. The logarithm of the iterations counter is hashed linearly from 0 to the largest occurring value to colors. Plots with $c = -0.07,0.652, c = -0.02,0.652, c= -0.02,0.8$ with the initial $z_{\text{init}} \in [-1,1]$ and $k = 1$ are given in figure~\ref{fig:julia4}.
 \begin{figure}
 \centering
 \includegraphics[width=0.25\linewidth]{./img/julia1New}

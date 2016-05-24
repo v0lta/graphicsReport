@@ -1,0 +1,70 @@
+% This file was created by matlab2tikz.
+% Minimal pgfplots version: 1.3
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\documentclass[tikz]{standalone}
+\usepackage{pgfplots}
+\usepackage{grffile}
+\pgfplotsset{compat=newest}
+\usetikzlibrary{plotmarks}
+\usepackage{amsmath}
+
+\begin{document}
+\definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
+%
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=1.5in,
+height=1.5in,
+scale only axis,
+xmin=0,
+xmax=40,
+ymin=0,
+ymax=0.18
+]
+\addplot [color=mycolor1,solid,mark=*,mark options={solid},forget plot]
+  table[row sep=crcr]{%
+1	7.43624996414681e-05\\
+2	0.000880334156170412\\
+3	0.00353601261055569\\
+4	0.00712901515936911\\
+5	0.0133907759973928\\
+6	0.0427405211039848\\
+7	0.000206059845600735\\
+8	0.000547485806387001\\
+9	0.00196008817464986\\
+10	0.0226731760604795\\
+11	0.063135805442098\\
+12	0.148678159120287\\
+13	0.000180103498053867\\
+14	0.00110161853136226\\
+15	0.00286250507318133\\
+16	0.0427024509966629\\
+17	0.13101034850781\\
+18	0.160234793926772\\
+19	0.000305268050311188\\
+20	0.001346963387917\\
+21	0.00231115957969172\\
+22	0.0119712307226477\\
+23	0.0556385092626041\\
+24	0.093420868561169\\
+25	0.000372606849793518\\
+26	0.000549229053173395\\
+27	0.00601647007600857\\
+28	0.0139769914579635\\
+29	0.0388039267800116\\
+30	0.0992825936527645\\
+31	0.000132664608036135\\
+32	0.00114561670785299\\
+33	0.00207761733243363\\
+34	0.00464217327690531\\
+35	0.0157348011287889\\
+36	0.0092276930014683\\
+};
+\end{axis}
+\end{tikzpicture}%
+\end{document}

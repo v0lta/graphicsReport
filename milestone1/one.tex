@@ -3,7 +3,7 @@
 This section focuses on the basic math of ray tracing. In a ray tracer so called primary rays are shot from a camera
 onto a scene. Irreducible objects or geometric primitives are defined. These make up a scene. In order to compute an
 image from this given scene, the ray-object intersection point closest to the camera has to be found. 
-Various primitives have been implemented, the most important one in the triangle. As triangle meshes can be used, to
+Various primitives have been implemented the most important one is the triangle. As triangle meshes can be used, to
 approximate more complex shapes. A triangle is defined by the three points $\mathbf{a},\mathbf{b},\mathbf{c}$, that make up its edges. If the edges are ordered counterclockwise the triagle normal can be computed using the formula:
 \footnote{This section in based on Ray Tracing from the gound up page 362 and onward.}
 \begin{equation}
@@ -11,19 +11,19 @@ approximate more complex shapes. A triangle is defined by the three points $\mat
  \|( \mathbf{b} - \mathbf{a} ) \times ((\mathbf{c} - \mathbf{a})\|.
 \label{eq:triNormal}
 \end{equation}
-To find triangle intersection points barycentric coordinates ($\alpha, \beta, \gamma$) are used. These coordinates allow do describe any point in the plane of the triangle as:
+To find triangle intersection points barycentric coordinates ($\alpha, \beta, \gamma$) are used. These coordinates allow to describe any point in the plane of the triangle as:
 \begin{align}
 \mathbf{p}(\alpha,\beta,\gamma) = \alpha \mathbf{a} + \beta \mathbf{b} + \gamma \mathbf{c}, \\
 \text{with } \alpha + \beta + \gamma = 1.
 \end{align}
-If $\mathbf{p}$ is inside of the plane the inequalities:
+If $\mathbf{p}$ is inside of the plane the inequalities,
 \begin{align}
 0 < \alpha < 1,
 0 < \beta < 1,
-0 < \gamma < 1.
+0 < \gamma < 1,
 \label{ineq:inCond}
 \end{align}
-Are satisfied. By substituting $\alpha = 1 - \beta - \gamma$ into the equation and setting $\mathbf{p} = \mathbf{r}(t)$ with $\mathbf{r} = \mathbf{o} + t * \mathbf{d}$ for a ray the following equation is obtained:
+are satisfied. By substituting $\alpha = 1 - \beta - \gamma$ into the equation and setting $\mathbf{p} = \mathbf{r}(t)$ with $\mathbf{r} = \mathbf{o} + t \cdot \mathbf{d}$ for a ray the following equation is obtained:
 \begin{align}
 \mathbf{o} + t\mathbf{d} = \mathbf{a} + \beta(\mathbf{b} - \mathbf{a}) + \gamma (\mathbf{c} - \mathbf{a}).
 \end{align}
@@ -53,9 +53,8 @@ Using Cramers rule the a set of equations can be derived and the intersection me
 condition is violated. This way unnecessary computations can be avoided. \footnote{See Ray Tracing from the Ground up page 366 for further details.}
 
 \subsection{The plane primitive}
-Another important primitive is the plane. These objects can be defined by a normal $\mathbb{n}$ which determines, where
-the plane is and a point $\mathbf{a}$ which determines where it is.\footnote{Ray Tracing from the ground up page 31.} 
-For a point $\mathbf{p}$ on the plane the condition 
+Another important primitive is the plane. These objects can be defined by a normal $\mathbf{n}$ which determines the orientation of the plan and $\mathbf{a}$ which determines where it is.\footnote{Ray Tracing from the ground up page 31.} 
+For a point $\mathbf{p}$ on the plane, the condition 
 \begin{equation}
 (\mathbf{p} - \mathbf{a})^T  \mathbf{n} = 0
 \label{eq:plane}
@@ -107,10 +106,10 @@ b = 2\mathbf{d}^T \mathbf{o} \\
 c = \mathbf{o}^T \mathbf{o} - 1 \\
 \text{then  } t = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
 \end{align}
-It is possible for learn the number of intersections from the discriminant $d = b^2 - 4ac$. If $d < 0$ there will be no intersections zero if $d = 0$ and two if $d > 0$. If two intersections are found the one with the smaller t should be used, as it will be closer to the camera.\footnote{Ray Tracing from the Ground up page 57}
+It is possible for learn the number of intersections from the discriminant $d = b^2 - 4ac$. If $d < 0$ there will be no intersections, one if $d = 0$ and two if $d > 0$. If two intersections are found the one with the smaller t should be used, as it will be closer to the camera.\footnote{Ray Tracing from the Ground up page 57}
 
 \section{Object Transformations}
-In order move, rotate or scale the objects defined earlier four dimensional transformation matrices are defined. Four dimensions are used, as three dimensional translation can be expressed as a matrix operation. \\ 
+In order to move, rotate or scale the objects defined earlier four dimensional transformation matrices are defined. Four dimensions are used, as three dimensional translations can be expressed as a matrix operation. \\ 
 Scaling can be done by using\footnote{Ray Tracing from the ground up page 404}:
 \begin{align}
 T_{scale} = \begin{pmatrix}
@@ -124,7 +123,7 @@ a &   &   &\\
 1/a &   & & \\
   & 1/b & & \\
   &   & 1/c & \\
-  &   &     & 1 //
+  &   &     & 1 \\
 \end{pmatrix}
 \end{align}
 Translation is working with:
@@ -165,11 +164,11 @@ T_z = \begin{pmatrix}
 The inverse rotations can be obtained by using $-\theta$ in place of $\theta$ or by transposing the matrices. Several
 transformations can be combined by matrix multiplication. \\
 Instead of transforming objects it is common practice in ray tracing to transform rays. Prior to intersection testing
-a ray ($\mathbf{r}(t) = \mathbf{o} + t\mathbf{d}$) is multiplied with the inverse transformations matrix. The obtained transformed ray is then intersected with the unchanged object. The hit point is found and transformed back into the
+a ray ($\mathbf{r}(t) = \mathbf{o} + t\mathbf{d}$) is multiplied with the inverse transformation matrix. The obtained transformed ray is then intersected with the unchanged object. The hit point is found and transformed back into the
 original space using the transformation matrix. \footnote{Ray Tracing from the Ground up page 418.} 
 For normals the process is slightly more complicated. \footnote{ Fundamentals of
 Computer Graphics, Lecture 3 Transformations, Philip Dutr\'e,  slide 60}
-In the unchanged space the normal must be orthogonal to an infinitely small vectors along the surface $\mathbf{n}^T \mathbf{m} = 0$. The same must be true for the transformed space $\mathbf{n'}^T\mathbf{m'} = 0$. Like points differences between points will be transformed by the original transformation matrix $\mathbf{Tm} = \mathbf{m}'$. Furthermore a matrix multiplied with its inverse is the identity $\mathbf{T}^{-1}\mathbf{T} = \mathbf{I}$. This leads to the derivation:
+In the unchanged space the normal must be orthogonal to infinitely small vectors along the surface $\mathbf{n}^T \mathbf{m} = 0$. The same must be true for the transformed space $\mathbf{n'}^T\mathbf{m'} = 0$. Like points differences between points will be transformed by the original transformation matrix $\mathbf{Tm} = \mathbf{m}'$. Furthermore a matrix multiplied with its inverse is the identity $\mathbf{T}^{-1}\mathbf{T} = \mathbf{I}$. This leads to the derivation:
 \begin{align}
 \mathbf{n}^T\mathbf{m} = 0 \\
 \mathbf{n}^T\mathbf{I}\mathbf{m} = 0 \\
@@ -195,7 +194,7 @@ With $\rho$ describing the material reflectivity with respect to ambient or diff
 
 
 \section{Camera}
-In this project a perspective camera is used. To set it up a the resolution ($r_x,r_y$), origin $\mathbf{e}$, view direction $\mathbf{l}$ , spacial orientation $\mathbf{up}$ and the field of view angle $\delta$ have to be provided. Using $\delta$ and the resolution data the width $w$ and hight $h$ of the view plane can be computed:
+In this project a perspective camera is used. To set it up the resolution ($r_x,r_y$), origin $\mathbf{e}$, view direction $\mathbf{l}$ , spacial orientation $\mathbf{up}$ and the field of view angle $\delta$ have to be provided. Using $\delta$ and the resolution data the width $w$ and hight $h$ of the view plane can be computed:
 \begin{align}
 w = 2 \cdot d \tan(\delta/2) \\
 h = r_y \cdot w \cdot 1/r_x
@@ -218,4 +217,4 @@ In this section two basic ray tracing implementations using only diffuse shading
 \caption{Two similar scenes rendered using comparable rendering code in Java and Python .}
 \label{fig:spherePython}
 \end{figure}
-The rendered 600x600 pixel images are shown in figure\ref{fig:spherePython}. With the result of the java code on the left and the python version on the right. The first image took 1.18s  to compute while the second was ready after 16.61s. If the python code is executed faster if it is run a second time as compiled python files will be generated, but for this scene it never falls under 10s. A popular method to speed up python code is to use a the typed Cython dialect.\footnote{Cython: The Best of Both Worlds,Computing in Science \& Engineering, S. Behnel; R. Bradshaw et al., Computing in Science \& Engineering \url{http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5582062}} However cythons multi-threaded capabilities are limited due to pythons global interpreter lock, additionally cython compiled classes can only be accessed from compiled code, which leads to a significant extra amount of code conversion work. Therefore the remainder of the project was done exclusively in Java. Javas strong typing avoids the python overhead which slowed down the ray tracing process considerably, as the python interpreter looses a lot of time determining the type of every object. 
+The rendered 600x600 pixel images are shown in figure~\ref{fig:spherePython}. With the result of the java code on the left and the python version on the right. The first image took 1.18s  to compute while the second was ready after 16.61s. The python code is executed faster if it is run a second time as compiled python files will be generated, but for this scene it never falls under 10s. A popular method to speed up python code is to use the typed Cython dialect.\footnote{Cython: The Best of Both Worlds,Computing in Science \& Engineering, S. Behnel; R. Bradshaw et al., Computing in Science \& Engineering \url{http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=5582062}} However cythons multi-threaded capabilities are limited due to pythons global interpreter lock, additionally cython compiled classes can only be accessed from compiled code, which leads to a significant extra amount of code conversion work. Therefore the remainder of the project was done exclusively in Java. Javas strong typing avoids the python overhead which slowed down the ray tracing process considerably, as the python interpreter looses a lot of time determining the type of every object. 

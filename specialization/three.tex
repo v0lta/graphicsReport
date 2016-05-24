@@ -2,11 +2,10 @@
 \subsection{Anti-aliasing}
 In computer graphics using raster images can lead to "stairstepping" or aliasing. Aliasing can generally be replaced by noise, if the ray origins are randomly placed inside a pixel. Fully random placement of the ray-starting point is not optimal, as the randomly distributed pixels can clump together and leave some areas poorly sampled. Therefore each pixel is subdivided into sub-areas and each sub-area is given one sample. This is called jittered sampling. 
 
-
 \subsection{Area Lights}
-In contrast to point lights, area lights have a surface. In order to solve the rendering equation for scenes lit by area lights, the area form of the rendering equation is considered \footnote{Ray Tracing from the ground up page 329}:
+In contrast to point lights, area lights have a surface. In order to solve the rendering equation for scenes lit by area lights, the area form is considered \footnote{Ray Tracing from the ground up page 329}:
 \begin{equation}
-\mathbf{L}_r(\mathbf{p},\mathbf{\omega}_0) = \int_{A_{light}} f_r(\mathbf{p},\mathbf{\omega}_i,\mathbf{\omega}_0) \mathbf{L}_e(\mathbf{p}',-\mathbf{\omega}_i)V(\mathbf{p},\mathbf{p}')G(\mathbf{p},\mathbf{p}')dA_{\mathbf{p}'}
+\mathbf{L}_r(\mathbf{p},\mathbf{\omega}_0) = \int_{A_{\text{light}}} f_r(\mathbf{p},\mathbf{\omega}_i,\mathbf{\omega}_0) \mathbf{L}_e(\mathbf{p}',-\mathbf{\omega}_i)V(\mathbf{p},\mathbf{p}')G(\mathbf{p},\mathbf{p}')dA_{\mathbf{p}'}
 \end{equation}
 The above equation allows it to find the outgoing light at a primary ray intersection point $\mathbf{p}$. Given the reflection orientation vector $\mathbf{\omega}_0$ and the incoming light direction $\mathbf{\omega}_i = (\mathbf{p} - \mathbf{p}') / \|\mathbf{p} - \mathbf{p}'\|$. The visibility function $V(\mathbf{p}',\mathbf{p})$ is one if point $\mathbf{p}$ is visible from point $\mathbf{p}'$ and zero if not. The geometry term $G$ is given by:
 \begin{equation}
@@ -17,18 +16,18 @@ The solution of the rendering equation can be estimated by using Monte-Carlo int
 \begin{equation}
 \mathbf{L}_r(\mathbf{p},\mathbf{\omega}_0) \approx \frac{1}{n_s} \sum_{j=1}^{n_s} \frac{f_r(\mathbf{p},\mathbf{\omega}_{i,j},\mathbf{\omega}_0) \mathbf{L}_e(\mathbf{p}',-\mathbf{\omega}_{i,j})V(\mathbf{p},\mathbf{p}_j')G(\mathbf{p},\mathbf{p_j}')}{p(\mathbf{p}')}
 \end{equation}
-Here $n_s$ denotes the number of samples, and $p(\mathbf{p}')$ the probability density function. The simplest choice is to distribute the samples uniformly which leads to $p(\mathbf{p}') = \frac{1}{A_l}$. A scene with a spherical and planar light source is shown in figure~\ref{fig:borgEarth}. Using area light sources leads to smooth shadows, like to those caused by the cubes on the earth's surface. 
+Here $n_s$ denotes the number of samples, and $p(\mathbf{p}')$ the probability density function. The simplest choice is to distribute the samples uniformly which leads to $p(\mathbf{p}') = \frac{1}{A_l}$. A scene with a spherical and planar light source is shown in figure~\ref{fig:borgEarth}. Using area light sources leads to smooth shadows, like those caused by the cubes on the earth's surface. 
 
 
 \begin{figure}
 \centering
-\includegraphics[width=0.5\linewidth]{./img/borgEarth3}
+\includegraphics[width=0.45\linewidth]{./img/borgEarth3}
 \caption{A spherical area light causing smooth shadows on a sphere}
 \label{fig:borgEarth}
 \end{figure}
 \begin{figure}
 \centering
-\includegraphics[width=0.5\linewidth]{./img/areaTeapot}
+\includegraphics[width=0.45\linewidth]{./img/areaTeapot}
 \caption{A rectangular area light illuminating the Utah teapot}
 \label{fig:areaTeapot}
 \end{figure}
@@ -93,13 +92,6 @@ The $c$ variable stands for the cosine of the angle between $\mathbf{c}$ and $\m
 The Fresnel term $F$ determines how light is reflected from each of the assumed smooth micro-facets. 
 A facet slope distribution function $D$ is used. This term depends on the angle between $\mathbf{n_p}$ and $\mathbf{h}$ called $\alpha$.
 Finally the geometric attenuation factor $G$ is the last term required to compute the Cook-Torrance BRDF.
-
-\subsection{Importance Sampling}
-In oder to  reduce the amount of samples required to come close to a decent approximation of the solution importance sampling is used. It's key concept is to distribute the sample points $\mathbf{p}'$ on the light source according to their contribution to the solution, important areas of the light should be sampled more often then insignificant ones. To achieve this goal the light source is subdivided into parts. A random point of each part is sampled and an importance value
-\begin{equation}
-I_j = i_j/I_{tot}
-\end{equation}
-is computed. The term $i_j$ denotes the importance value of the $j$th part of the light source, assuming that the subdivided shapes are stored in a list. The importance vlaue could for example be the product of the brdf function weighted by the geometry term of the rendering equation $i = (f_s + f_d) \cdot G$. Or if the specular part of the solution is the most important part $i = f_s$ could be used. \\
 \begin{figure}
 \centering
 \includegraphics[width=0.25\linewidth]{./img/Richter_window_Cologne_Cathedral}
@@ -107,30 +99,99 @@ is computed. The term $i_j$ denotes the importance value of the $j$th part of th
 \caption{Gerhard Richter's southern wing main window of the cologne cathedral consisting of 11.500 pixels colored using 72 different colors and pseudo-randomly arranged. On the right the lighting effect of the window on the cathedral floor can be seen.}
 \label{fig:Richter_window_Cologne_Cathedral}
 \end{figure}
-Gerhard Richter's design of the cologne cathedral's south window and the light effects it produces is shown in figure~\ref{fig:Richter_window_Cologne_Cathedral}. Inspired by the design a rectangular light source with pseudo-randomly distributed squares has been created. This area light source is placed at a ninety degree angle on top of a floor plane. The Specular brdf-component of the floor plane will be varied. First the Phong's model is used. 
 \begin{figure}
 \centering
-\includegraphics[width=0.3\linewidth]{./img/phong100}
-\includegraphics[width=0.3\linewidth]{./img/phong500}
-\includegraphics[width=0.3\linewidth]{./img/phong2000}
-\caption{Importance sampling of Phong's specular reflection model using $e = 100$(left), $e = 500$(middle), $e = 2000$(right). In all cases $\rho_d = 0.001$ and $\rho_s = 0.999$}
+\includegraphics[width=0.3\linewidth]{./img/ph3}
+\includegraphics[width=0.3\linewidth]{./img/ph2}
+\includegraphics[width=0.3\linewidth]{./img/ph1}
+\caption{Importance sampling of Phong's specular reflection model using $e = 100$(left), $e = 500$(middle), $e = 2000$(right). In all cases $\rho_d =0.8$ and $\rho_s = 0.2$}
 \label{fig:phongRichter}
 \end{figure}
-Results are shown in figure~\ref{fig:phongRichter}. It can be observed that the larger the Phong-exponent $e$ is chosen, the more pronounced the reflection becomes. 
-Which makes sense as with larger values for $e$ the set of possible incoming light  vectors at $\mathbf{p}$ with large specular contributions becomes smaller and smaller. Therefore the largest specular contributions come from only a small set of sample points $\mathbf{p'}$ on the light source, which are close to each other. Therefore one expects to see more detailed reflections for larger values of $e$.   \\
 \begin{figure}
 \centering
-\includegraphics[width=0.3\linewidth]{./img/ct3}
-\includegraphics[width=0.3\linewidth]{./img/ct2}
 \includegraphics[width=0.3\linewidth]{./img/ct1}
-\caption{Scenes computed using Cook-Torrance specular reflection models with parameters $f_0 =0.0366, m = 0.276$ (left),  $f_0 = 0.025, m = 0.076$(middle),  $f_0 = 0.03, m = 0.01$(right). In all cases $/rho_s = 1.0$ and $/rho_d = 0.5$}
+\includegraphics[width=0.3\linewidth]{./img/ct2}
+\includegraphics[width=0.3\linewidth]{./img/ct3}
+\caption{Scenes computed using Cook-Torrance specular reflection models with parameters $f_0 =0.0366, m = 0.276$ (left),  $f_0 = 0.025, m = 0.076$(middle),  $f_0 = 0.03, m = 0.01$(right). In all cases $\rho_s = 0.2$ and $\rho_d = 0.8$}
 \label{fig:CTRichter}
 \end{figure}
+Gerhard Richter's design of the cologne cathedral's south window and the light effects it produces is shown in figure~\ref{fig:Richter_window_Cologne_Cathedral}. Inspired by the design a rectangular light source with pseudo-randomly distributed squares has been created. This area light source is placed at a ninety degree angle on top of a floor plane. The Specular brdf-component of the floor plane will be varied. First Phong's model is used. 
+
+Results are shown in figure~\ref{fig:phongRichter}. It can be observed that the larger the Phong-exponent $e$ is chosen, the more pronounced the reflection becomes. 
+Which makes sense as with larger values for $e$ the set of possible incoming light  vectors at $\mathbf{p}$ with large specular contributions becomes smaller and smaller. Therefore the largest specular contributions come from only a small set of sample points $\mathbf{p'}$ on the light source, which are close to each other. Therefore one expects to see more detailed reflections for larger values of $e$.   \\
+
 In the images shown in figure~\ref*{fig:CTRichter}, the Phong model, has been replaced with a Cook-Torrance model for specular reflection. It can be observed that the larger $m$ is chosen the less visible reflection details become. Which is to be expected as $m$ models the root mean square slope of model material facets, and the larger these slopes are the more bumpy and therefore less mirror like the material will be.
 
+\subsection{Importance Sampling}
+In oder to  reduce the amount of samples required to come close to a decent approximation of the solution importance sampling is used. It's key concept is to distribute the sample points $\mathbf{p}'$ on the light source according to their contribution to the solution, important areas of the light should be sampled more often then insignificant ones. To achieve this goal the light source is subdivided into parts. A random point of each part is sampled and an importance fraction
+\begin{equation}
+q_j = i_j/I_{tot}
+\end{equation}
+consisting of the sampled importance function values over the total sum $I_{\text{tot}}\sum\limits_{i=0}^{N} i_j$ is computed. These fractions generally add up to one, except for cases where the total sum is very small. If the fractions add up to one they can be interpreted as a discrete probabilities of a random variable $X$, while $P(X = x_j) = q_j$. A realization of $X$ can then be generated by using:  \footnote{Marko Boon, Technische Universiteit Eindhoven, 2WB05 Simulation Lecture 8: Generating random variables, page 17. \url{http://www.win.tue.nl/~marko/2WB05/lecture8.pdf}}
+\begin{equation}
+\sum\limits_{j=0}^{i-1} q_j \leq U < \sum\limits_{j=0}^{i} q_j.
+\end{equation} 
+Here a uniformly distributed random variable $U \in (0,1)$ is generated first. $X$ is then set to $X = x_i$ if the condition above holds. This can be seen as a way of mapping the uniformly distributed space $(0,1)$ into the discrete distribution space given by the set of $\{q_j\}$, by computing the discrete cumulative probability density function and mapping $U$ into it.  
+\begin{figure}
+\centering
+\input{/home/moritz/uni/cgPro/report/specialization/tikz/prob1.tex}
+\input{/home/moritz/uni/cgPro/report/specialization/tikz/hist1.tex}
+\caption{Discrete probabilities for 36 light source partitions (left). Right histogram of 500 samples drawn from this distribution using the discrete version of the inverse transform method.  }
+\label{fig:invTrans}
+\end{figure}
+Figure~\ref{fig:invTrans} shows the effect of transforming a uniformly distributed variables the way described above. It can be observed that the histogram resembles the shape of the discrete probability density function. During the Monte-Carlo estimation of the integral the probability term in the denominator changes to $p(\mathbf{p}') = q_j \cdot p_j(\mathbf{p}')$ with $p_j(\mathbf{p}') = \frac{1}{A_j}$ and $A_j$ the area of the sub-light.
+
+\subsubsection{Error analysis}
+This section is devoted to an analysis of the convergence behavior of the rendering equation given the scene consisting of the pixeled light source illuminating a plane. Mean square error computations are used to judge the degree of convergence in various images. In this report the mean square error is defined as:
+\begin{equation}
+\text{e}_{\text{mse}} = \frac{1}{N} \sum\limits_{i = 0}^{N} \frac{1}{3}\sum\limits_{j = 0}^{2} (p_{1,i,j} - p_{2,i,j} )^2
+\end{equation}
+\begin{figure}
+\centering
+\includegraphics[width=0.4\linewidth]{./img/output2500v2}
+\includegraphics[width=0.4\linewidth]{./img/exp4}
+\caption{Rendering of the pixelated window scene using 2500 samples per intersection point.}
+\label{fig:output2500}
+\end{figure}
+Figure~\ref{fig:output2500} shows two images which where rendered using 2500 uniformly distributed samples on the light source. In the right image an additional point light has been added to illuminate the wall behind the area light source. Using this large amount of samples it can be assumed, that the solution of the rendering equation has converged to a point where the solution does not vary anymore. Using a similar low resolution images with 200 by 200 pixels a series of experiments is conducted to verify the quality of the implemented methods. Using the 
+importance function 
+\begin{equation}
+f_{\text{imp}} = G \cdot ( f_{\text{diffuse}} + f_{\text{specular}} ).
+\label{eq:impfun1}
+\end{equation}
+The scene shown in figure~\ref{fig:output2500} has been computed hundred and fifty times with the number of area light samples linearly increasing.
+\begin{figure}
+\centering
+\input{/home/moritz/uni/cgPro/report/specialization/tikz/resultComparison.tex}
+\input{/home/moritz/uni/cgPro/report/specialization/tikz/resultComparisonTime.tex}
+\caption{Convergence and computation time of Monte-Carlo integration with (red) and without (blue) priority sampling for the scene shown in figure~\ref{fig:output2500} on the left. Using linearly increasing numbers of light source samples. }
+\label{fig:impSampExp1}
+\end{figure}
+\begin{figure}
+\centering
+\input{/home/moritz/uni/cgPro/report/specialization/tikz/exp4Result.tex}
+\caption{Convergence of Monte-Carlo integration with (red) and without (blue) priority sampling for the scene shown in figure~\ref{fig:output2500} on the right. Using linearly increasing numbers of light source samples. }
+\label{fig:impSampExp2}
+\end{figure}
+The results are shown in figure~\ref{fig:impSampExp1}. Initially the importance sampled solution converges faster but as the total number of samples is increased the difference decreases and figure~\ref{fig:impSampExp2} plain Monte-Carlo integration actually does better than the importance sampling version using function~\ref{eq:impfun1}. This is probably due to the fact that this importance function used so far does only take geometry into account, but neglects the texture of the light source additionally it assumes that the $V(\mathbf{p},\mathbf{p}') = 1$, so it does not allocate fewer samples in areas which lie in the shadow of the two new objects and do not contribute to the solution. Increasing the number of partial light sources leads to faster convergence, but longer computation times. 
+In general the importance sampling method implemented here could be improved further, for example by finding better importance functions, which in turn could yield better sample distributions leading to faster convergence. It has been shown that the importance sampling method implemented here
+works better than plain Monte-Carlo integration for scenes where not too much area is covered by shadows and small sample numbers. For larger numbers of samples the two methods deliver similar results, depending on the arrangement of objects plain Monte-Carlo can be the better choice.  
+\begin{figure}
+\centering
+\includegraphics[width=0.3\linewidth]{./img/twoAI/1}
+\includegraphics[width=0.3\linewidth]{./img/twoAI/11}
+\includegraphics[width=0.3\linewidth]{./img/twoAI/21}
+\includegraphics[width=0.3\linewidth]{./img/twoAI/51}
+\includegraphics[width=0.3\linewidth]{./img/twoAI/101}
+\includegraphics[width=0.3\linewidth]{./img/twoAI/501}
+\caption{Plain Monte Carlo (red) and importance sampled Monte-Carlo with 121 subdivisions (blue). Results for 1,11,21,51,101 and 501 samples are shown from left to right. The plane material is given by $\rho_{\text{diff}} = 0.25,  \rho_{\text{spec}} = 0.75, f_{\text{ct}}(0.015,0.01)$.}
+\label{fig:twoLight}
+\end{figure}
+Figure~\ref{fig:twoLight} shows a uniformly sampled Monte-Carlo light source in red on the left and a importance sampled Monte-Carlo light source on the right. The top row shows how well the importance sampling does in terms of variance reduction for small light source sample numbers.
 
 
-
+\section{Conclusion}
+In this project a ray tracer consisting of more then six-thousand lines of code has been written. Another thousand lines have been written from scratch in python, but that version had to be abandoned out of speed concerns. The Java version of the ray tracer covers key areas of the course, generally the implemented features work, but much room for further improvement still remains. The tree generation process especially for SAH-Trees could be optimized further, currently SAH beats all the other methods in terms of rendering time, but takes longer overall for complex wavefront objects consisting of large numbers of triangles, because the tree generation is slow.  Importance sampling works as well but currently takes only the scene geometry into account. An improved version could use the texture information to converge even faster. 
 
 
 
