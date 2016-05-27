@@ -60,7 +60,7 @@ The normal information can then be used for rendering purposes. In case of the S
 \subsection{Physical materials}
 An important factor in improving the quality of the rendered images is the bidirectional reflectance distribution function (brdf) $f_r(\mathbf{p},\mathbf{\omega}_i,\mathbf{\omega}_0)$. The brdf-model may be split into a diffuse and specular component
 \begin{equation}
-f_r(\mathbf{p},\mathbf{\omega}_i,\mathbf{\omega}_0) = f_d(\mathbf{p},\mathbf{\omega}_i) + \rho_s f_s(\mathbf{p},\mathbf{\omega}_i,\mathbf{\omega}_0).
+f_r(\mathbf{p},\mathbf{\omega}_i,\mathbf{\omega}_0) = f_d(\mathbf{p},\mathbf{\omega}_i) + f_s(\mathbf{p},\mathbf{\omega}_i,\mathbf{\omega}_0).
 \end{equation}
 In this project a lambertian
 \begin{equation}
@@ -197,10 +197,10 @@ works better than plain Monte-Carlo integration for scenes where not too much ar
 \label{fig:twoLight}
 \end{figure}
 
-Figure~\ref{fig:twoLight} shows a uniformly sampled Monte-Carlo light source in red on the left and a importance sampled Monte-Carlo light source on the right. The top row shows how well the importance sampling does in terms of variance reduction for small light source sample numbers. Even for only one area light sample per intersection points the contours of the specular reflection are visible. For higher numbers of area light sampled the difference becomes less significant.
+Figure~\ref{fig:twoLight} shows a uniformly sampled Monte-Carlo light source in red on the left and a importance sampled Monte-Carlo light source on the right. The top row shows how well the importance sampling does in terms of variance reduction for small light source sample numbers. Even for only one area light sample per intersection point the edges of the specular reflection are visible. For higher numbers of area light samples the difference becomes less significant.
 
 \section{Conclusion}
-In this project a ray tracer consisting of more then six-thousand lines of code has been written. Another thousand lines have been written from scratch in python, but that version had to be abandoned out of speed concerns. The Java version of the ray tracer covers key areas of the course, generally the implemented features work, but much room for further improvement still remains. The tree generation process especially for SAH-Trees could be optimized further, currently SAH beats all the other methods in terms of rendering time, but takes longer overall for complex wavefront objects consisting of large numbers of triangles, because the tree generation is slow.  Importance sampling works as well but currently takes only the scene geometry into account. An improved version could use the texture information to converge even faster. 
+In this project a ray tracer consisting of more then five-thousand lines of code have been written. Another thousand lines have been written from scratch in python, but that version had to be abandoned out of speed concerns. The Java version of the ray tracer covers key areas of the course, generally the implemented features work, but much room for further improvement still remains. The tree generation process especially for SAH-Trees could be optimized further, currently SAH beats all the other methods in terms of rendering time, but takes longer overall for complex wavefront objects consisting of large numbers of triangles, because the tree generation is slow.  Importance sampling works as well but currently takes only the scene geometry into account. An improved version could use the texture information to converge even faster. 
 
 
 
